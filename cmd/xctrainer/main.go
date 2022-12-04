@@ -45,7 +45,7 @@ func xctrainer() int {
 		usage()
 		return 1
 	}
-	
+
 	// * Input
 	inputStat, err := os.Stat(*mxpInput)
 	if err != nil {
@@ -86,7 +86,7 @@ func xctrainer() int {
 		*igcFile = path.Join(*igcDir, mxp.Start().Format("20060102T150405Z.igc"))
 	}
 	if *igcFile != "" {
-		file, err := os.OpenFile(*igcFile, os.O_CREATE | os.O_WRONLY, os.ModePerm)
+		file, err := os.OpenFile(*igcFile, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 		if err != nil {
 			log.Fatal(err)
 			return 1
@@ -96,7 +96,7 @@ func xctrainer() int {
 		fmt.Printf("Writing: %s\n", *igcFile)
 	} else {
 		writer = bufio.NewWriter(os.Stdout)
-		defer os.Stdout.Close()	
+		defer os.Stdout.Close()
 	}
 
 	// * Write

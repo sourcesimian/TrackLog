@@ -38,7 +38,7 @@ func (t *Track) Load(r *bufio.Reader) bool {
 			if t.addPoint(line) == false {
 				return false
 			}
-			points ++
+			points++
 		}
 	}
 	return points > 0
@@ -52,7 +52,7 @@ func (t *Track) ToIGC(trk *igc.Track) {
 	for _, point := range t.points {
 		lat := DtoDMm(point.lat)
 		lon := DtoDMm(point.lon)
-		
+
 		p := &igc.Point{
 			Time:    point.Time(),
 			Lat:     lat,

@@ -3,8 +3,8 @@ package mxp
 import (
 	"time"
 
-	"github.com/sourcesimian/TrackLog/xctrainer"
 	"github.com/sourcesimian/TrackLog/gps"
+	"github.com/sourcesimian/TrackLog/xctrainer"
 )
 
 type Point struct {
@@ -61,6 +61,13 @@ func (p *Point) Time() time.Time {
 	return p.t.Start().Add(time.Second * time.Duration(p.elapsed))
 }
 
+func (p *Point) LatDMm() gps.DMm {
+	return DtoDMm(p.lat)
+}
+
+func (p *Point) LonDMm() gps.DMm {
+	return DtoDMm(p.lon)
+}
 
 func DtoDMm(d int) gps.DMm {
 	sign := 1
@@ -69,17 +76,17 @@ func DtoDMm(d int) gps.DMm {
 		d = -d
 	}
 	factor := 24000
-	deg := int(d/factor)
-	d -= (deg*factor)
+	deg := int(d / factor)
+	d -= (deg * factor)
 	d *= 60
-	min := int(d/factor)
-	d -= (min*factor)
+	min := int(d / factor)
+	d -= (min * factor)
 	d *= 1000
-	dmin3 := int(d/factor)
+	dmin3 := int(d / factor)
 
-	return gps.DMm {
-		Deg: deg * sign,
-		Min: min,
+	return gps.DMm{
+		Deg:   deg * sign,
+		Min:   min,
 		Dmin3: dmin3,
 	}
 }
