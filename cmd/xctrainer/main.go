@@ -33,6 +33,8 @@ func xctrainer() int {
 	igcDir := flag.String("igcDir", "", "IGC output directory")
 	timeout := flag.Int("timeout", 5, "Timeout")
 	baudRate := flag.Int("baud", 57600, "Baud rate")
+	many := flag.Bool("many", false, "Many track logs")
+	out := true
 
 	flag.Parse()
 	if len(flag.Args()) > 0 {
@@ -74,38 +76,54 @@ func xctrainer() int {
 		reader = bufio.NewReader(port)
 	}
 
-	// * Load
-	mxp := mxp.NewTrack()
-	if !mxp.Load(reader) {
-		return 1
-	}
-
-	// * Output
-	var writer *bufio.Writer
-	if *igcDir != "" {
-		*igcFile = path.Join(*igcDir, mxp.Start().Format("20060102T150405Z.igc"))
-	}
-	if *igcFile != "" {
-		file, err := os.OpenFile(*igcFile, os.O_CREATE|os.O_WRONLY, os.ModePerm)
-		if err != nil {
-			log.Fatal(err)
+	for {
+		if out {
+			fmt.Print("Wait ...")
+		}
+		
+		// * Load
+		mxp := mxp.NewTrack()
+		if !mxp.Load(reader, func(line int){
+			if out {
+				fmt.Printf("\rLoading %d", line)
+			}
+		}) {
 			return 1
 		}
-		defer file.Close()
-		writer = bufio.NewWriter(file)
-		fmt.Printf("Writing: %s\n", *igcFile)
-	} else {
-		writer = bufio.NewWriter(os.Stdout)
-		defer os.Stdout.Close()
+
+		// * Output
+		var writer *bufio.Writer
+		if *igcDir != "" {
+			*igcFile = path.Join(*igcDir, mxp.Start().Format("20060102T150405Z.igc"))
+		}
+		if *igcFile != "" {
+			file, err := os.OpenFile(*igcFile, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+			if err != nil {
+				log.Fatal(err)
+				return 1
+			}
+			defer file.Close()
+			writer = bufio.NewWriter(file)
+			if out {
+				fmt.Printf("\rWriting: %s\n", *igcFile)
+			}
+		} else {
+			writer = bufio.NewWriter(os.Stdout)
+			defer os.Stdout.Close()
+		}
+
+		// * Write
+		igc := igc.NewTrack()
+		mxp.ToIGC(igc)
+		igc.Pilot = *pilotName
+		igc.GliderType = *gliderType
+
+		igc.Write(writer)
+		writer.Flush()
+
+		if !*many {
+			break
+		}
 	}
-
-	// * Write
-	igc := igc.NewTrack()
-	mxp.ToIGC(igc)
-	igc.Pilot = *pilotName
-	igc.GliderType = *gliderType
-
-	igc.Write(writer)
-	writer.Flush()
 	return 0
 }

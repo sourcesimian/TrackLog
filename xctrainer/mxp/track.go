@@ -2,7 +2,9 @@ package mxp
 
 import (
 	"bufio"
+	"log"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/sourcesimian/TrackLog/igc"
@@ -27,9 +29,21 @@ func NewTrack() *Track {
 	return t
 }
 
-func (t *Track) Load(r *bufio.Reader) bool {
+func (t *Track) Load(r *bufio.Reader, progress func(int)) bool {
 	points := 0
-	for line := range xctrainer.Lines(r) {
+	for {
+		line, err := r.ReadString('\n')
+		if err != nil {
+			if err.Error() != "EOF" {
+				log.Fatal(err)
+			}
+			return false
+		}
+		line = strings.TrimRight(line, "\r\n")
+		if line == "" {
+			continue
+		}
+
 		if len(t.device) == 0 {
 			if t.ParseHeader(line) == false {
 				return false
@@ -39,6 +53,10 @@ func (t *Track) Load(r *bufio.Reader) bool {
 				return false
 			}
 			points++
+			progress(points)
+		}
+		if points == t.pointCount {
+			break
 		}
 	}
 	return points > 0

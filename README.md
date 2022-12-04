@@ -1,10 +1,10 @@
 TrackLog <!-- omit in toc -->
 ===
 
-***Dump and manage Vario/GPS tracklogs***
+***Dump and Manage Vario/GPS Tracklogs***
 
 # Aircotec XCTrainer Tracklog Dump
 ```
 make xctrainer
-./build/xctrainer --mxp /dev/ttyUSB0 -igcDir . -pilot "Fred Flintstone" -gliderType "Pterodactyl Pteranodon Longiceps"
+./build/xctrainer -mxp /dev/ttyUSB0 -timeout 60 -many -igcDir . -pilot "Fred Flintstone" -gliderType "Pterodactyl Pteranodon Longiceps"
 ```
