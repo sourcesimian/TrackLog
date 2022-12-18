@@ -2,6 +2,7 @@ package mxp
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"math"
 	"strings"
@@ -14,7 +15,7 @@ import (
 type Track struct {
 	device        string
 	version       string
-	serial        string
+	serial        int
 	flight        int
 	time          time.Time
 	pointCount    int
@@ -64,6 +65,15 @@ func (t *Track) Load(r *bufio.Reader, progress func(int)) bool {
 
 func (t *Track) ToIGC(trk *igc.Track) {
 	trk.Manufacturer = "XGD"
+	switch t.device {
+	case "xc":
+		trk.Manufacturer += " XC Trainer V" + t.version[0:1] + "." + t.version[1:2] + "-" + t.version[2:]
+	case "tn":
+		trk.Manufacturer += " Top-navigator v." + t.version
+	}
+
+	trk.Manufacturer += ", S/N " + fmt.Sprintf("%d", t.serial)
+
 	trk.Date = t.time
 	trk.GPSDatum = "WGS-84"
 
@@ -109,7 +119,7 @@ func (t *Track) ParseHeader(line string) bool {
 	}
 	t.device = l.TakeString(2)
 	t.version = l.TakeString(4)
-	t.serial = l.TakeString(4)
+	t.serial = l.TakeHexInt(4)
 	t.flight = l.TakeHexInt(2)
 
 	t.time = time.Date(2000+l.TakeInt(2), time.Month(l.TakeInt(2)), l.TakeInt(2), l.TakeInt(2), l.TakeInt(2), l.TakeInt(2), 0, time.UTC)

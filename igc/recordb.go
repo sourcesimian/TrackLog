@@ -27,15 +27,15 @@ func (r *BRecord) Write(w *bufio.Writer) {
 	r.point.Lon.Write(w, false)
 	switch r.fix {
 	case 2:
-		fmt.Fprintf(w, "V")
+		fmt.Fprintf(w, "V") // 2D fix (no GPS ALt) or no GPS data
 	case 3:
-		fmt.Fprintf(w, "A")
+		fmt.Fprintf(w, "A") //  3D fix
 	default:
 		fmt.Fprintf(w, "?")
 	}
 
-	fmt.Fprintf(w, "%05d", r.point.AltGNSS)
 	fmt.Fprintf(w, "%05d", r.point.AltBaro)
+	fmt.Fprintf(w, "%05d", r.point.AltGNSS)
 	fmt.Fprintf(w, "%s", CRLF)
 }
 

@@ -19,12 +19,12 @@ type Header struct {
 func (h *Header) WriteHeader(w *bufio.Writer) {
 	var hrs = []HRecord{
 		{
-			source:   'F',
-			code:     "DTE",
-			longName: "DATE",
+			source: 'F',
+			code:   "DTE",
 			value: func() string {
 				return h.Date.Format("020106")
 			},
+			nocolon: true,
 		},
 		{
 			source:   'F',
@@ -77,7 +77,7 @@ func (h *Header) WriteHeader(w *bufio.Writer) {
 		{
 			source:   'F',
 			code:     "SIT",
-			longName: "Site",
+			longName: "SITE",
 			value: func() string {
 				return ""
 			},

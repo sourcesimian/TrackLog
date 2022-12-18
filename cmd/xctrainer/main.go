@@ -80,10 +80,10 @@ func xctrainer() int {
 		if out {
 			fmt.Print("Wait ...")
 		}
-		
+
 		// * Load
 		mxp := mxp.NewTrack()
-		if !mxp.Load(reader, func(line int){
+		if !mxp.Load(reader, func(line int) {
 			if out {
 				fmt.Printf("\rLoading %d", line)
 			}

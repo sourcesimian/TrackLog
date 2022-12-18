@@ -45,8 +45,13 @@ func NewPoint(t *Track, line string) *Point {
 
 	p.lat = l.TakeSignedHexInt(6)
 	p.lon = l.TakeSignedHexInt(6)
-	p.AltGNSS = l.TakeHexInt(4)
-	if t.height == 2 {
+	switch t.height {
+	case 0:
+		p.AltBaro = l.TakeHexInt(4)
+	case 1:
+		p.AltBaro = l.TakeHexInt(4)
+	case 2:
+		p.AltGNSS = l.TakeHexInt(4)
 		p.AltBaro = l.TakeHexInt(4)
 	}
 
